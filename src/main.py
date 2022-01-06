@@ -3,6 +3,7 @@ import generate_makefile
 import generate_plugin_info
 import generate_plugin
 import generate_ui
+import generate_readme
 
 # get plugin name
 
@@ -31,6 +32,7 @@ path_to_plugin = path_to_bin + "/" + plugin_name
 try: os.mkdir(path_to_plugin)
 except: print("plugin directory already exists and willl be overwritten")
 
-f = open(path_to_bin + "/README.md", "w")
-f.write("This file was automatically generated.")
-f.close()
+# generate the files
+
+generate_readme.generate_file(path_to_plugin, plugin_name)
+generate_plugin_info.generate_file(path_to_plugin, plugin_name)
