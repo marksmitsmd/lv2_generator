@@ -46,18 +46,32 @@ def generate_header_lines(name):
     hl += ["\t// Go to:", "\t// http://service.steinberg.de/databases/plugin/nsf/plugIn", "\t// Get a proper UID and fill it in here:"]
     hl += generate_simple_getter_function(
     "int64_t", "UniqueId", "", "const noexcept override", "d_cconst('a', 'b', 'c', 'd')")
+    hl += [""]
 
     hl += ["\t// Init"]
+    hl += ["\tvoid initParameter(uint32_t index, Parameter& parameter) override;"]
+    hl += ["\tvoid initProgramName(uint32_t index, String& programName) override;", ""]
 
     hl += ["\t// Internal data"]
+    hl += ["\tfloat getParameterValue(uint32_t index) const override;"]
+    hl += ["\tvoid setParameterValue(uint32_t index, float value) override;"]
+    hl += ["\tvoid loadProgram(uint32_t index) override;", ""]
 
     hl += ["\t// Optional"]
+    hl += ["\t// Optional callback to inform the plugin about a sample rate change"]
+    hl += ["\tvoid sampleRateChange(double newSampleRate) override;", ""]
 
     hl += ["\t// Process"]
+    hl += ["\tvoid activate() override;"]
+    hl += ["\tvoid run(const float**, float** outputs, uint32_t frames) override;", ""]
 
-    hl += ["private:", ""]
+    hl += ["private:"]
+    hl += ["\tfloat\tfParams[paramCount];", "\tdouble\tfSampleRate;", "\tfloat\tgain;", ""]
 
     hl += ["};", ""]
+
+    hl += ["struct Preset {", "\tconst char* name;", "\tfloat params[Plugin" + str(name) + "::paramCount];", "};", ""]
+    hl += ["//const uint presetCount = sizeof(factoryPresets) / sizeof(Preset);", ""]
 
     hl += ["END_NAMESPACE_DISTRHO", "", "#endif"]
     return hl
