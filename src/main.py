@@ -36,3 +36,4 @@ except: print("plugin directory already exists and willl be overwritten")
 
 generate_readme.generate_file(path_to_plugin, plugin_name)
 generate_plugin_info.generate_file(path_to_plugin, plugin_name)
+generate_makefile.generate_file(path_to_plugin, plugin_name)

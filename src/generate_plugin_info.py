@@ -56,8 +56,10 @@ def generate_file(path, name):
     for line in plugin_definition_lines:
         new_file.write("#define DISTRHO_PLUGIN_" + line + "\n")
     new_file.write("\n")
+    #TODO implement user input
 
     for line in ui_definition_lines:
         new_file.write("#define DISTRHO_UI_" + line + "\n")
+    #TODO implement user input
 
     new_file.close()
