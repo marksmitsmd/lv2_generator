@@ -1,3 +1,5 @@
+# script to generate a makefile for a DITRHO plugin
+
 print("generate_makefile imported")
 
 make_lines_1 = [
@@ -75,3 +77,5 @@ def generate_file(path, name):
     for line in make_lines_2:
         new_file.write(line + "\n")
     new_file.write("\n")
+
+    new_file.close()

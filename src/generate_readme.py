@@ -1,3 +1,5 @@
+# script to generate a readme file for a DITRHO plugin
+
 print("generate_readme imported")
 
 def generate_file(path, name):

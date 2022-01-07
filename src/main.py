@@ -30,10 +30,11 @@ except: print("bin directory already exists")
 
 path_to_plugin = path_to_bin + "/" + plugin_name
 try: os.mkdir(path_to_plugin)
-except: print("plugin directory already exists and willl be overwritten")
+except: print("plugin directory already exists and will be overwritten")
 
 # generate the files
 
 generate_readme.generate_file(path_to_plugin, plugin_name)
 generate_plugin_info.generate_file(path_to_plugin, plugin_name)
 generate_makefile.generate_file(path_to_plugin, plugin_name)
+generate_plugin.generate_files(path_to_plugin, plugin_name)

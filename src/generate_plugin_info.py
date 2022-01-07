@@ -1,3 +1,5 @@
+# script to generate a DistrhoPluginInfo header for a DITRHO plugin
+
 print("generate_plugin_info imported")
 
 license_lines = ["/*",
