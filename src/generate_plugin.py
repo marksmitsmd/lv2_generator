@@ -71,7 +71,10 @@ def generate_header_lines(name):
     hl += ["};", ""]
 
     hl += ["struct Preset {", "\tconst char* name;", "\tfloat params[Plugin%s::paramCount];" % name, "};", ""]
-    hl += ["//const uint presetCount = sizeof(factoryPresets) / sizeof(Preset);", ""]
+    hl += ["const Preset factoryPresets[] = {", "\t{", "\t\t\"Unity Gain\",", "\t\t{0.0f}", "\t}"]
+    hl += ["\t//,{", "\t//\t\"Another preset\",\t// preset name"]
+    hl += ["\t//\t{-14.f, ...}\t// array of presetCount float param values", "\t//}", "};", ""]
+    hl += ["const uint presetCount = sizeof(factoryPresets) / sizeof(Preset);", ""]
 
     hl += ["END_NAMESPACE_DISTRHO", "", "#endif"]
     return hl

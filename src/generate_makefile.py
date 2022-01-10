@@ -48,16 +48,16 @@ make_lines_2 = [
 user_lines = []
 
 def generate_lines_from_input(name):
-    user_lines.append("NAME = d_" + str(name))
+    user_lines.append("NAME = d_%s" % name)
     user_lines.append("")
     user_lines.append("# -------------------------------------------------------------")
     user_lines.append("# Files to build")
     user_lines.append("")
     user_lines.append("FILES_DSP = \\")
-    user_lines.append("\tPlugin" + str(name) + ".cpp")
+    user_lines.append("\tPlugin%s.cpp" % name)
     user_lines.append("")
     user_lines.append("FILES_UI = \\")
-    user_lines.append("\tUI" + str(name) + ".cpp")
+    user_lines.append("\tUI%s.cpp" % name)
 
 def generate_file(path, name):
     new_file = open(path + "/Makefile", "w")
