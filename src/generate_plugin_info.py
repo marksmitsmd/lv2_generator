@@ -21,29 +21,32 @@ license_lines = ["/*",
 " * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.",
 " */"]
 
+from user_input import param_dictionary as p_dict
+
 plugin_definition_lines = [
-"NAME ",
-"NUM_INPUTS ",
-"NUM_OUTPUTS ",
-"URI ",
-"HAS_UI ",
-"IS_RT_SAFE ",
-"IS_SYNTH ",
-"WANT_DIRECT_ACCESS",
-"WANT_LATENCY ",
-"WANT_MIDI_INPUT ",
-"WANT_MIDI_OUTPUT ",
-"WANT_PROGRAMS ",
-"WANT_STATE ",
-"WANT_TIMEPOS ",
+"NAME %s" % p_dict["name"],
+"NUM_INPUTS %i" % p_dict["num_inputs"],
+"NUM_OUTPUTS %i" % p_dict["num_outputs"],
+"URI %s" % p_dict["URI"],
+"HAS_UI 0",
+"IS_RT_SAFE 1",
+"IS_SYNTH %i" % p_dict["is_synth"],
+"WANT_DIRECT_ACCESS 0",
+"WANT_LATENCY 0",
+"WANT_MIDI_INPUT %i" % p_dict["midi_in"],
+"WANT_MIDI_OUTPUT %i" % p_dict["midi_out"],
+"WANT_PROGRAMS 1",
+"WANT_STATE 0",
+"WANT_TIMEPOS 0",
 ]
 
 ui_definition_lines = [
+"USE_NANOVG 0",
 "URI DISTRHO_PLUGIN_URI \"#UI\"",
-"USE_CUSTOM ",
-"CUSTOM_INCLUDE_PATH ",
-"CUSTOM_WIDGET_TYPE ",
-"USER_RESIZABLE "
+"USE_CUSTOM 0",
+#"CUSTOM_INCLUDE_PATH ",
+#"CUSTOM_WIDGET_TYPE ",
+"USER_RESIZABLE 0"
 ]
 
 def generate_file(path, name):

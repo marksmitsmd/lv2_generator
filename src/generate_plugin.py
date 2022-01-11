@@ -22,9 +22,15 @@ def generate_header_lines(name):
     hl += ["", "#include \"DistrhoPlugin.hpp\"", ""]
     hl += ["START_NAMESPACE_DISTRHO", ""]
 
+    hl += ["#ifndef MIN", "#define MIN(a,b) ( (a) < (b) ? (a) : (b) )", "#endif", ""]
+    hl += ["#ifndef MAX", "#define MAX(a,b) ( (a) > (b) ? (a) : (b) )", "#endif", ""]
+    hl += ["#ifndef CLAMP", "#define CLAMP(v,min,max) (MIN((max), MAX((min), (v))))", "#endif", ""]
+    hl += ["#ifndef DB_CO", "#define DB_CO(g) ((g) > -90.f ? powf(10.f, (g) * 0.05f) : 0.f)", "#endif", ""]
+
     hl += ["class Plugin%s : public Plugin" % name, "{"]
 
     hl += ["public:", "\tPlugin%s();" % name, "\t~Plugin%s();" % name, ""]
+    hl += ["\tenum Parameters {", "\t\tparamGain = 0,", "\t\tparamCount", "\t};", ""]
 
     hl += ["protected:"]
 
@@ -42,7 +48,7 @@ def generate_header_lines(name):
     "const char*", "License", "", "const noexcept override",
     "\"https://spdx.org/licenses/MIT\"")
     hl += generate_simple_getter_function(
-    "uint32_t", "Verion", "", "const noexcept override", "d_version(0, 1, 0)")
+    "uint32_t", "Version", "", "const noexcept override", "d_version(0, 1, 0)")
     hl += ["\t// Go to:", "\t// http://service.steinberg.de/databases/plugin/nsf/plugIn", "\t// Get a proper UID and fill it in here:"]
     hl += generate_simple_getter_function(
     "int64_t", "UniqueId", "", "const noexcept override", "d_cconst('a', 'b', 'c', 'd')")
@@ -59,7 +65,7 @@ def generate_header_lines(name):
 
     hl += ["\t// Optional"]
     hl += ["\t// Optional callback to inform the plugin about a sample rate change"]
-    hl += ["\tvoid sampleRateChange(double newSampleRate) override;", ""]
+    hl += ["\tvoid sampleRateChanged(double newSampleRate) override;", ""]
 
     hl += ["\t// Process"]
     hl += ["\tvoid activate() override;"]
@@ -94,10 +100,10 @@ def generate_implementation_lines(name):
     il += ["Plugin%s::~Plugin%s() {" % (name, name), "", "}", ""]
 
     il += ["//Init"]
-    il += ["void Plugin%s::initParameter(uint32_t index, Paramter& parameter) {" % name]
+    il += ["void Plugin%s::initParameter(uint32_t index, Parameter& parameter) {" % name]
     il += ["\tif(index >= paramCount)", "\t\treturn;", ""]
     il += ["\tparameter.ranges.min = -90.f;", "\tparameter.ranges.max = 30.f;", "\tparameter.ranges.def = 0.f;"]
-    il += ["\tparameter.unit = \"db\";", "\tparameter.hints = kParameterIsAutomatable;", ""]
+    il += ["\tparameter.unit = \"db\";", "\tparameter.hints = kParameterIsAutomable;", ""]
     il += ["\tswitch(index) {", "\t\tcase paramGain:", "\t\t\tparameter.name = \"Gain (dB)\";"]
     il += ["\t\t\tparameter.shortName = \"Gain\";", "\t\t\tbreak;", "\t}", "}", ""]
 
@@ -107,15 +113,15 @@ def generate_implementation_lines(name):
     il += ["\t if (index < presetCount) {", "\t\tprogramName = factoryPresets[index].name;", "\t}", "}", ""]
 
     il += ["//Internal data", "/**", "  Optional callback to inform the plugin of a sample rate change", "*/"]
-    il += ["void Plugin%s::sampleRateChange(double newSampleRate) {" % name]
+    il += ["void Plugin%s::sampleRateChanged(double newSampleRate) {" % name]
     il += ["\tfSampleRate = newSampleRate;", "}", ""]
 
     il += ["/**", "  Get the current value of a parameter.", "*/"]
-    il += ["float Plguin%s::getParameterValue(uint32_t index) const {" % name]
-    il += ["\t fParams[index];", "}", ""]
+    il += ["float Plugin%s::getParameterValue(uint32_t index) const {" % name]
+    il += ["\treturn fParams[index];", "}", ""]
 
     il += ["/**", "  Change a parameter value.", "*/"]
-    il += ["void Plguin%s::setParameterValue(uint32_t index, float value) {" % name]
+    il += ["void Plugin%s::setParameterValue(uint32_t index, float value) {" % name]
     il += ["\tfParams[index] = value;", ""]
     il += ["\tswitch(index) {", "\t\tcase paramGain:", "\t\t\tgain = DB_CO(CLAMP(fParams[paramGain], -90.0, 30.0));"]
     il += ["\t\t\tbreak;", "\t}", "}", ""]
@@ -130,10 +136,10 @@ def generate_implementation_lines(name):
 
     il += ["void Plugin%s::run(const float** inputs, float** outputs, uint32_t frames) {" % name]
     il += ["\t// get the left and right audio inputs"]
-    il += ["\tconst float* const inpL = input[0];", "\tconst float* const inpR = input[1];", ""]
+    il += ["\tconst float* const inpL = inputs[0];", "\tconst float* const inpR = inputs[1];", ""]
     il += ["\t// get the left and right audio outputs"]
-    il += ["\tfloat* const outL = output[0];", "\tfloat* const outR = output[1];", ""]
-    il += ["\t apply gain against all samples", "\tfor (uint32_t i=0; i < frames; i++) {"]
+    il += ["\tfloat* const outL = outputs[0];", "\tfloat* const outR = outputs[1];", ""]
+    il += ["\t// apply gain against all samples", "\tfor (uint32_t i=0; i < frames; i++) {"]
     il += ["\t\toutL[i] = inpL[i] * gain;", "\t\toutR[i] = inpR[i] * gain;", "\t}", "}", ""]
 
     il += ["Plugin* createPlugin() {", "\treturn new Plugin%s();" % name, "}", ""]
