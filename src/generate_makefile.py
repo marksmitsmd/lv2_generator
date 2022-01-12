@@ -35,7 +35,7 @@ make_lines_2 = [
 "endif",
 "endif",
 "",
-"TARGETS += lv2_sep",
+"TARGETS += lv2_dsp",
 "TARGETS += vst",
 "",
 "endif",
