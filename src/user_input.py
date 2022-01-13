@@ -8,6 +8,6 @@ param_dictionary = {
     "num_outputs": 2,
     "URI": "\"http://distrho.sf.net/examples/test\"",
     "is_synth": 0,
-    "midi_in": 0,
+    "midi_in": 1,
     "midi_out": 1
 }

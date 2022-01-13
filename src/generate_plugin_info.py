@@ -54,6 +54,9 @@ def generate_file(path, name):
 
     new_file.write("//This file was automatically generated.\n\n")
 
+    new_file.write("#ifndef DISTRHO_PLUGIN_INFO_H_INCLUDED\n")
+    new_file.write("#define DISTRHO_PLUGIN_INFO_H_INCLUDED\n\n")
+
     for line in license_lines:
         new_file.write(line + "\n")
     new_file.write("\n")
@@ -61,10 +64,13 @@ def generate_file(path, name):
     for line in plugin_definition_lines:
         new_file.write("#define DISTRHO_PLUGIN_" + line + "\n")
     new_file.write("\n")
+
+    # only if the plugin has a UI which it doesn't have for now
+
+    #for line in ui_definition_lines:
+    #    new_file.write("#define DISTRHO_UI_" + line + "\n")
     #TODO implement user input
 
-    for line in ui_definition_lines:
-        new_file.write("#define DISTRHO_UI_" + line + "\n")
-    #TODO implement user input
+    new_file.write("\n#endif")
 
     new_file.close()

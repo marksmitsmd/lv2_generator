@@ -3,6 +3,7 @@
 print("generate_plugin imported")
 
 from generate_plugin_info import license_lines as lic
+from user_input import param_dictionary as p_dict
 
 def generate_simple_getter_function(return_type, param_name, input_par, spec, return_statement):
     func = []
@@ -69,7 +70,18 @@ def generate_header_lines(name):
 
     hl += ["\t// Process"]
     hl += ["\tvoid activate() override;"]
-    hl += ["\tvoid run(const float**, float** outputs, uint32_t frames) override;", ""]
+
+    # generate the inputs for the run function based on user input
+    run_inputs = "const float**, float**"
+    if p_dict["num_outputs"] > 0:
+        run_inputs += " outputs, uint32_t frames"
+    else:
+        run_inputs += ", uint32_t"
+    if p_dict["midi_in"] > 0:
+        run_inputs += ", const MidiEvent* midiEvents, uint32_t midiEventCount"
+
+    # run function generation based on user input
+    hl += ["\tvoid run(%s) override;" % run_inputs, ""]
 
     hl += ["private:"]
     hl += ["\tfloat\tfParams[paramCount];", "\tdouble\tfSampleRate;", "\tfloat\tgain;", ""]
@@ -134,13 +146,47 @@ def generate_implementation_lines(name):
     il += ["//Process"]
     il += ["void Plugin%s::activate() {" % name, "\t//plugin is activated", "}", ""]
 
-    il += ["void Plugin%s::run(const float** inputs, float** outputs, uint32_t frames) {" % name]
-    il += ["\t// get the left and right audio inputs"]
-    il += ["\tconst float* const inpL = inputs[0];", "\tconst float* const inpR = inputs[1];", ""]
-    il += ["\t// get the left and right audio outputs"]
-    il += ["\tfloat* const outL = outputs[0];", "\tfloat* const outR = outputs[1];", ""]
-    il += ["\t// apply gain against all samples", "\tfor (uint32_t i=0; i < frames; i++) {"]
-    il += ["\t\toutL[i] = inpL[i] * gain;", "\t\toutR[i] = inpR[i] * gain;", "\t}", "}", ""]
+    # generate the inputs for the run function based on user input
+    run_inputs = "const float**"
+    if p_dict["num_inputs"] > 0:
+        run_inputs += " inputs"
+    run_inputs += ", float**"
+    if p_dict["num_outputs"] > 0:
+        run_inputs += " outputs, uint32_t frames"
+    else:
+        run_inputs += ", uint32_t"
+    if p_dict["midi_in"] > 0:
+        run_inputs += ", const MidiEvent* midiEvents, uint32_t midiEventCount"
+
+    # run function generation based on user input
+    il += ["void Plugin%s::run(%s) {" % (name, run_inputs)]
+
+    # MIDI input handling
+    if p_dict["midi_in"] > 0:
+        il += ["\t// MIDI input handling"]
+        il += ["\tfor (uint32_t i=0; i<midiEventCount; i++) {", "\t\t// handle midiEvents[i]", "\t}", ""]
+
+    # audio handling
+    if p_dict["num_inputs"] > 0:
+        il += ["\t// assumes two inputs, the script found %i from the user input, please adjust accordingly" % p_dict["num_inputs"]]
+        il += ["\t// get the left and right audio inputs"]
+        il += ["\tconst float* const inpL = inputs[0];", "\tconst float* const inpR = inputs[1];", ""]
+    if p_dict["num_outputs"] > 0:
+        il += ["\t// assumes two outputs, the script found %i from the user input, please adjust accordingly" % p_dict["num_outputs"]]
+        il += ["\t// get the left and right audio outputs"]
+        il += ["\tfloat* const outL = outputs[0];", "\tfloat* const outR = outputs[1];", ""]
+        if p_dict["num_inputs"] > 0:
+            il += ["\t// apply gain against all samples, again assuming two ins and outs", "\tfor (uint32_t i=0; i < frames; i++) {"]
+            il += ["\t\toutL[i] = inpL[i] * gain;", "\t\toutR[i] = inpR[i] * gain;", "\t}", ""]
+        else:
+            il += ["\t// generate output values, again assuming two outs", "\tfor (uint32_t i=0; i < frames; i++) {"]
+            il += ["\t\toutL[i] = 0", "\t\toutR[i] = 0", "\t}", ""]
+
+    # MIDI output handling
+    if p_dict["midi_out"] > 0:
+        il += ["\t// write MIDI events:", "\t// writeMidiEvent();", ""]
+
+    il += ["}", ""]
 
     il += ["Plugin* createPlugin() {", "\treturn new Plugin%s();" % name, "}", ""]
 
