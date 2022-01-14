@@ -18,8 +18,8 @@ header_lines = []
 
 def generate_header_lines(name):
     hl = header_lines
-    hl.append("#ifndef PLUGIN_%s_H" % str(name).upper())
-    hl.append("#define PLUGIN_%s_H" % str(name).upper())
+    hl.append(f"#ifndef PLUGIN_{str(name).upper()}_H")
+    hl.append(f"#define PLUGIN_{str(name).upper()}_H")
     hl += ["", "#include \"DistrhoPlugin.hpp\"", ""]
     hl += ["START_NAMESPACE_DISTRHO", ""]
 
@@ -28,23 +28,23 @@ def generate_header_lines(name):
     hl += ["#ifndef CLAMP", "#define CLAMP(v,min,max) (MIN((max), MAX((min), (v))))", "#endif", ""]
     hl += ["#ifndef DB_CO", "#define DB_CO(g) ((g) > -90.f ? powf(10.f, (g) * 0.05f) : 0.f)", "#endif", ""]
 
-    hl += ["class Plugin%s : public Plugin" % name, "{"]
+    hl += [f"class Plugin{name} : public Plugin", "{"]
 
-    hl += ["public:", "\tPlugin%s();" % name, "\t~Plugin%s();" % name, ""]
+    hl += ["public:", f"\tPlugin{name}();", f"\t~Plugin{name}();", ""]
     hl += ["\tenum Parameters {", "\t\tparamGain = 0,", "\t\tparamCount", "\t};", ""]
 
     hl += ["protected:"]
 
     hl += ["\t// Information"]
     hl += generate_simple_getter_function(
-    "const char*", "Label", "", "const noexcept override", "\"%s\"" % name)
+    "const char*", "Label", "", "const noexcept override", f"\"{name}\"")
     hl += generate_simple_getter_function(
     "const char*", "Description", "", "const override", "\"Here goes your description\"")
     hl += generate_simple_getter_function(
     "const char*", "Maker", "", "const noexcept override", "\"example.com\"")
     hl += generate_simple_getter_function(
     "const char*", "HomePage", "", "const override",
-    "\"https://exampe.com/plugins/%s\"" % str(name).lower())
+    f"\"https://exampe.com/plugins/{str(name).lower()}\"")
     hl += generate_simple_getter_function(
     "const char*", "License", "", "const noexcept override",
     "\"https://spdx.org/licenses/MIT\"")
@@ -81,14 +81,14 @@ def generate_header_lines(name):
         run_inputs += ", const MidiEvent* midiEvents, uint32_t midiEventCount"
 
     # run function generation based on user input
-    hl += ["\tvoid run(%s) override;" % run_inputs, ""]
+    hl += [f"\tvoid run({run_inputs}) override;", ""]
 
     hl += ["private:"]
     hl += ["\tfloat\tfParams[paramCount];", "\tdouble\tfSampleRate;", "\tfloat\tgain;", ""]
 
     hl += ["};", ""]
 
-    hl += ["struct Preset {", "\tconst char* name;", "\tfloat params[Plugin%s::paramCount];" % name, "};", ""]
+    hl += ["struct Preset {", "\tconst char* name;", f"\tfloat params[Plugin{name}::paramCount];", "};", ""]
     hl += ["const Preset factoryPresets[] = {", "\t{", "\t\t\"Unity Gain\",", "\t\t{0.0f}", "\t}"]
     hl += ["\t//,{", "\t//\t\"Another preset\",\t// preset name"]
     hl += ["\t//\t{-14.f, ...}\t// array of presetCount float param values", "\t//}", "};", ""]
@@ -101,18 +101,18 @@ implementation_lines = []
 
 def generate_implementation_lines(name):
     il = implementation_lines
-    il += ["#include \"Plugin%s.hpp\"" % name, ""]
+    il += [f"#include \"Plugin{name}.hpp\"", ""]
     il += ["START_NAMESPACE_DISTRHO", ""]
 
-    il += ["Plugin%s::Plugin%s()" % (name, name)]
+    il += [f"Plugin{name}::Plugin{name}()"]
     il += ["\t : Plugin(paramCount, presetCount, 0) // paramCount params, presetCount programs, 0 states"]
     il += ["{", "\tfor (unsigned p = 0; p < paramCount; ++p) {"]
     il += ["\t\tParameter param;", "\t\t initParameter(p, param);", "\t\tsetParameterValue(p, param.ranges.def);", "\t}", "}", ""]
 
-    il += ["Plugin%s::~Plugin%s() {" % (name, name), "", "}", ""]
+    il += [f"Plugin{name}::~Plugin{name}() "+"{", "", "}", ""]
 
     il += ["//Init"]
-    il += ["void Plugin%s::initParameter(uint32_t index, Parameter& parameter) {" % name]
+    il += [f"void Plugin{name}::initParameter(uint32_t index, Parameter& parameter) "+"{"]
     il += ["\tif(index >= paramCount)", "\t\treturn;", ""]
     il += ["\tparameter.ranges.min = -90.f;", "\tparameter.ranges.max = 30.f;", "\tparameter.ranges.def = 0.f;"]
     il += ["\tparameter.unit = \"db\";", "\tparameter.hints = kParameterIsAutomable;", ""]
@@ -121,30 +121,30 @@ def generate_implementation_lines(name):
 
     il += ["/**", "  Set the name of the program @a index."]
     il += ["  This function will be called once, shortly after the plugin is created", "*/"]
-    il += ["void Plugin%s::initProgramName(uint32_t index, String& programName) {" % name]
+    il += [f"void Plugin{name}::initProgramName(uint32_t index, String& programName) "+"{"]
     il += ["\t if (index < presetCount) {", "\t\tprogramName = factoryPresets[index].name;", "\t}", "}", ""]
 
     il += ["//Internal data", "/**", "  Optional callback to inform the plugin of a sample rate change", "*/"]
-    il += ["void Plugin%s::sampleRateChanged(double newSampleRate) {" % name]
+    il += [f"void Plugin{name}::sampleRateChanged(double newSampleRate) "+"{"]
     il += ["\tfSampleRate = newSampleRate;", "}", ""]
 
     il += ["/**", "  Get the current value of a parameter.", "*/"]
-    il += ["float Plugin%s::getParameterValue(uint32_t index) const {" % name]
+    il += [f"float Plugin{name}::getParameterValue(uint32_t index) const "+"{"]
     il += ["\treturn fParams[index];", "}", ""]
 
     il += ["/**", "  Change a parameter value.", "*/"]
-    il += ["void Plugin%s::setParameterValue(uint32_t index, float value) {" % name]
+    il += [f"void Plugin{name}::setParameterValue(uint32_t index, float value) "+"{"]
     il += ["\tfParams[index] = value;", ""]
     il += ["\tswitch(index) {", "\t\tcase paramGain:", "\t\t\tgain = DB_CO(CLAMP(fParams[paramGain], -90.0, 30.0));"]
     il += ["\t\t\tbreak;", "\t}", "}", ""]
 
     il += ["/**", "  Load a program.", "  The host may call this function from any context,", "  including realtime processing.", "*/"]
-    il += ["void Plugin%s::loadProgram(uint32_t index) {" % name]
+    il += [f"void Plugin{name}::loadProgram(uint32_t index) "+"{"]
     il += ["\tif (index < presetCount) {", "\t\tfor (int i=0; i < paramCount; i++) {"]
     il += ["\t\t\tsetParameterValue(i, factoryPresets[index].params[i]);", "\t\t}", "\t}", "}", ""]
 
     il += ["//Process"]
-    il += ["void Plugin%s::activate() {" % name, "\t//plugin is activated", "}", ""]
+    il += [f"void Plugin{name}::activate() "+"{", "\t//plugin is activated", "}", ""]
 
     # generate the inputs for the run function based on user input
     run_inputs = "const float**"
@@ -159,7 +159,7 @@ def generate_implementation_lines(name):
         run_inputs += ", const MidiEvent* midiEvents, uint32_t midiEventCount"
 
     # run function generation based on user input
-    il += ["void Plugin%s::run(%s) {" % (name, run_inputs)]
+    il += [f"void Plugin{name}::run({run_inputs}) "+"{"]
 
     # MIDI input handling
     if p_dict["midi_in"] > 0:
@@ -168,11 +168,11 @@ def generate_implementation_lines(name):
 
     # audio handling
     if p_dict["num_inputs"] > 0:
-        il += ["\t// assumes two inputs, the script found %i from the user input, please adjust accordingly" % p_dict["num_inputs"]]
+        il += [f'\t// assumes two inputs, the script found {p_dict["num_inputs"]} from the user input, please adjust accordingly']
         il += ["\t// get the left and right audio inputs"]
         il += ["\tconst float* const inpL = inputs[0];", "\tconst float* const inpR = inputs[1];", ""]
     if p_dict["num_outputs"] > 0:
-        il += ["\t// assumes two outputs, the script found %i from the user input, please adjust accordingly" % p_dict["num_outputs"]]
+        il += [f'\t// assumes two outputs, the script found {p_dict["num_outputs"]} from the user input, please adjust accordingly']
         il += ["\t// get the left and right audio outputs"]
         il += ["\tfloat* const outL = outputs[0];", "\tfloat* const outR = outputs[1];", ""]
         if p_dict["num_inputs"] > 0:
@@ -188,13 +188,13 @@ def generate_implementation_lines(name):
 
     il += ["}", ""]
 
-    il += ["Plugin* createPlugin() {", "\treturn new Plugin%s();" % name, "}", ""]
+    il += ["Plugin* createPlugin() {", f"\treturn new Plugin{name}();", "}", ""]
 
     il += ["END_NAMESPACE_DISTRHO"]
 
 def generate_files(path, name):
     # header
-    new_file = open(path + "/Plugin" + name + ".hpp", "w")
+    new_file = open(path + f"/Plugin{name}.hpp", "w")
     new_file.write("//This file was automatically generated.\n\n")
 
     for line in lic:
@@ -209,7 +209,7 @@ def generate_files(path, name):
     new_file.close()
 
     # implementation
-    new_file = open(path + "/Plugin" + name + ".cpp", "w")
+    new_file = open(path + f"/Plugin{name}.cpp", "w")
     new_file.write("//This file was automatically generated.\n\n")
 
     for line in lic:

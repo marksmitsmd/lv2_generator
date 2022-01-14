@@ -7,7 +7,7 @@ import generate_readme
 
 # get plugin name
 
-plugin_name = raw_input("Enter plugin name: ")
+plugin_name = input("Enter plugin name: ")
 #TODO: add execption handling for bad input
 
 # generate folder structure
