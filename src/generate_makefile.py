@@ -47,16 +47,16 @@ make_lines_2 = [
 "# NOTE: note path must be absolute",
 "MOD_WORKDIR ?= $(HOME)/mod-workdir",
 "MOD_ENVIRONMENT = AR=${1}/host/usr/bin/${2}-gcc-ar",
-"CC=${1}/host/usr/bin/${2}-gcc",
-"CPP=${1}/host/usr/bin/${2}-cpp",
-"CXX=${1}/host/usr/bin/${2}-g++",
-"LD=${1}/host/usr/bin/${2}-ld",
-"PKG_CONFIG=${1}/host/usr/bin/pkg-config",
-"STRIP=${1}/host/usr/bin/${2}-strip",
-"CFLAGS=\"I${1}/staging/usr/unclude\"",
-"CPPFLAGS= ",
-"CXXFLAGS=\"-I${1}/staging/usr/icnlude\"",
-"LDFLAGS=\"-L${1}/staging/usr/lib\" \\",
+"CC=${1}/host/usr/bin/${2}-gcc " +
+"CPP=${1}/host/usr/bin/${2}-cpp " +
+"CXX=${1}/host/usr/bin/${2}-g++ " +
+"LD=${1}/host/usr/bin/${2}-ld " +
+"PKG_CONFIG=${1}/host/usr/bin/pkg-config " +
+"STRIP=${1}/host/usr/bin/${2}-strip " +
+"CFLAGS=\"I${1}/staging/usr/unclude\" " +
+"CPPFLAGS=  " +
+"CXXFLAGS=\"-I${1}/staging/usr/icnlude\" " +
+"LDFLAGS=\"-L${1}/staging/usr/lib\" \\ " +
 "EXE_WRAPPER=\"qemu-${3}-static -L ${1}/target\"",
 "",
 "modduo:",
